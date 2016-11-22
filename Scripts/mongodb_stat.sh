@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Отправка статистики сервера MongoDB на сервер Zabbix
 
 MongoAPI(){
@@ -15,10 +15,10 @@ MongoAPI(){
 
 # Список БД
 MongoAPI 'db.getMongo().getDBs()'
-DBStr=$((cat <<EOF
+DBStr=$((cat <<EOFX
 $RespStr
-EOF
-) | awk -F\\t '$1~/^databases..+.name$/ && $2!~/^local$/ {
+EOFX
+ ) | awk -F\\t '$1~/^databases..+.name$/ && $2!~/^local$/ {
  print $2
 }')
 
@@ -31,7 +31,7 @@ if [ -z $1 ]; then
  OutStr=$((cat <<EOF
 $RespStr
 EOF
- ) | awk -F\\t '$1~/^(metrics.(cursor.(open.total|timedOut)|document.(deleted|inserted|returned|updated))|connections.(current|available)|globalLock.(currentQueue.(readers|total|writers)|activeClients.(total|readers|writers)|totalTime)|extra_info.(heap_usage_bytes|page_faults)|mem.(resident|virtual|mapped)|uptime|network.(bytes(In|Out)|numRequests)|opcounters.(command|delete|getmore|insert|query|update))(.floatApprox)?$/ {
+ ) | awk -F\\t '$1~/^(metrics.(cursor.(open.total|timedOut)|document.(deleted|inserted|returned|updated))|connections.(current|available)|activeClients.(total|readers|writers)|extra_info.(heap_usage_bytes|page_faults)|mem.(resident|virtual|mapped)|uptime|network.(bytes(In|Out)|numRequests)|opcounters.(command|delete|getmore|insert|query|update))(.floatApprox)?$/ {
   sub(".floatApprox", "", $1)
   print "- mongodb." $1, int($2)
  }')
